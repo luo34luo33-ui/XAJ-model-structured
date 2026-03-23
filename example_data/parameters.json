@@ -1,0 +1,46 @@
+{
+  "model_name": "XAJ",
+  "version": "2.0",
+  "description": "新安江模型参数配置",
+  "parameters": {
+    "k": 0.8,
+    "b": 0.3,
+    "im": 0.01,
+    "um": 20.0,
+    "lm": 70.0,
+    "dm": 60.0,
+    "c": 0.15,
+    "sm": 20.0,
+    "ex": 1.5,
+    "ki": 0.3,
+    "kg": 0.4,
+    "cs": 0.8,
+    "l": 1,
+    "ci": 0.8,
+    "cg": 0.98
+  },
+  "parameter_ranges": {
+    "k": {"min": 0.5, "max": 1.5, "unit": "-", "description": "蒸散发系数"},
+    "b": {"min": 0.1, "max": 0.5, "unit": "-", "description": "蓄水容量曲线指数"},
+    "im": {"min": 0.0, "max": 0.1, "unit": "-", "description": "不透水面积比例"},
+    "um": {"min": 10.0, "max": 30.0, "unit": "mm", "description": "上层土壤蓄水容量"},
+    "lm": {"min": 50.0, "max": 100.0, "unit": "mm", "description": "下层土壤蓄水容量"},
+    "dm": {"min": 40.0, "max": 80.0, "unit": "mm", "description": "深层土壤蓄水容量"},
+    "c": {"min": 0.1, "max": 0.3, "unit": "-", "description": "深层蒸散发系数"},
+    "sm": {"min": 10.0, "max": 50.0, "unit": "mm", "description": "自由水蓄水容量"},
+    "ex": {"min": 1.0, "max": 2.0, "unit": "-", "description": "自由水容量曲线指数"},
+    "ki": {"min": 0.1, "max": 0.5, "unit": "-", "description": "壤中流出流系数"},
+    "kg": {"min": 0.2, "max": 0.6, "unit": "-", "description": "地下水出流系数"},
+    "cs": {"min": 0.5, "max": 0.95, "unit": "-", "description": "河网蓄水常数"},
+    "l": {"min": 0, "max": 10, "unit": "time steps", "description": "滞时"},
+    "ci": {"min": 0.5, "max": 0.95, "unit": "-", "description": "壤中流消退系数"},
+    "cg": {"min": 0.9, "max": 0.999, "unit": "-", "description": "地下水消退系数"}
+  },
+  "calibration": {
+    "algorithm": "SCE-UA",
+    "max_iterations": 1000,
+    "objective_function": "NSE",
+    "population_size": 50,
+    "n_complexes": 5
+  }
+}
