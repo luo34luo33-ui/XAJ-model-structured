@@ -81,21 +81,30 @@ def calculate_prcp_runoff(
     Returns:
         Tuple of (r, r_im) - runoff and runoff from impervious part
     """
-    wmm = wm * (1.0 + b)
-    a = wmm * (1.0 - (1.0 - w0 / wm) ** (1.0 / (1.0 + b)))
-    
-    if np.isnan(a).any():
-        raise ArithmeticError("Please check if w0>wm or b is a negative value!")
+    b_safe = np.maximum(np.asarray(b), 1e-6)
+    wm_arr = np.asarray(wm)
+    w0_arr = np.asarray(w0)
+    wm_safe = np.where(wm_arr < 1e-6, 1e-6, wm_arr)
+    w0_safe = np.clip(w0_arr, 0, wm_safe - 1e-6)
+    wmm = wm_safe * (1.0 + b_safe)
+    ratio = w0_safe / wm_safe
+    power = 1.0 / (1.0 + b_safe)
+    term = np.maximum(1.0 - ratio, 1e-10)
+    a = wmm * (1.0 - np.power(term, power))
+    a = np.where(np.isnan(a), 0.0, a)
     
     # Calculate runoff
+    wm_minus_w0 = np.maximum(wm_safe - w0_safe, 0.0)
+    wmm_minus_a_pe = wmm - np.minimum(a + np.asarray(pe), wmm)
+    runoff_term = wm_safe * np.power(np.maximum(wmm_minus_a_pe / wmm, 1e-10), 1.0 + b_safe)
     r_cal = np.where(
-        pe > 0.0,
+        np.asarray(pe) > 0.0,
         np.where(
-            pe + a < wmm,
-            pe - (wm - w0) + wm * (1.0 - np.minimum(a + pe, wmm) / wmm) ** (1.0 + b),
-            pe - (wm - w0)
+            np.asarray(pe) + a < wmm,
+            np.asarray(pe) - wm_minus_w0 + runoff_term,
+            np.asarray(pe) - wm_minus_w0
         ),
-        np.full(pe.shape, 0.0)
+        np.full(pe.shape if hasattr(pe, 'shape') else len(pe), 0.0)
     )
     
     r = np.maximum(r_cal, 0.0)
